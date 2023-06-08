@@ -1,6 +1,7 @@
 const Category = require("../models/categoryModel");
 const Dessert = require("../models/dessertModel");
 const route = require('express').Router();
+const path = require('path')
  const upload = require('../middleware/upload');
 
  route.post('/postCategory',upload.single('file'),async(req,res)=>{
@@ -8,7 +9,7 @@ const route = require('express').Router();
     const{Name,cID} = req.body;
     const category = new Category({Name,cID})
     if(req.file){
-        productdata.file=req.file.filename;
+        category.Image=req.file.filename;
      }
 
     const result = await category.save();
@@ -22,10 +23,13 @@ const route = require('express').Router();
 } 
 });
 
-route.post('/postDessert',async(req,res)=>{
+route.post('/postDessert',upload.single('file'),async(req,res)=>{
     try{   
-        const{CName,Flavour,Image,Price,Quantity} = req.body;
-        const category = new Dessert({CName,Flavour,Image,Price,Quantity});
+        const{CName,Flavour,Price,Quantity} = req.body;
+        const category = new Dessert({CName,Flavour,Price,Quantity});
+        if(req.file){
+            category.Image=req.file.filename;
+         }
         const result = await category.save();
         if(result){
             res.status(200).json({status:true,message:'success'});
